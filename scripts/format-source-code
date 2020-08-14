@@ -1,0 +1,33 @@
+#!/bin/sh
+
+if ! type uncrustify > /dev/null; then
+    cat <<EOF
+ERROR: The 'astyle' utility is not available in your machine.
+
+Please install it and run the script again. If you are running on a Debian based
+distribution you can run:
+
+$ apt install uncrustify
+EOF
+    exit 1
+fi
+
+# We use the script path as a base and allow us to go to the source dir, so we
+# can run the script from there.
+sourcedir=$(dirname $0)/..
+
+source_files=$(
+    grep "^// Copyright (C) .* TotalCross Global Mobile Platform Ltda\.$" \
+        --files-with-matches \
+        $(git ls-files \
+            | grep -E "(\.hpp|\.cpp|\.h|\.c|\.java|\.m)$" \
+            | grep -E -v -f .astyle-ignore \
+        ) \
+    )
+
+uncrustify -c .uncrustify.cfg \
+            --no-backup \
+            --replace \
+            --if-changed \
+            --mtime \
+            files $source_files
