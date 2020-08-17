@@ -1,5 +1,5 @@
 name: 'Commit Message Check'
-on: [push]
+on: [push, pull_request]
 
 jobs:
   check-commit-message:
