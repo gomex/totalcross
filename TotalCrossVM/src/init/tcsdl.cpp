@@ -103,6 +103,9 @@ bool TCSDL_Init(ScreenSurface screen, const char* title, bool fullScreen) {
 	int height = (getenv("TC_HEIGHT") == NULL) ? hh : std::stoi(getenv("TC_HEIGHT"));
 
 	uint32 flags; 
+#ifdef __APPLE__
+	flags = SDL_WINDOW_SHOWN;
+#else
 	if(getenv("TC_FULLSCREEN") == NULL) {
 		flags = SDL_WINDOW_FULLSCREEN;
 	} else {
@@ -110,6 +113,7 @@ bool TCSDL_Init(ScreenSurface screen, const char* title, bool fullScreen) {
 		width -= width*0.09;
 		height -= height*0.09;
 	}
+#endif
 
 	// Create the window
 	SDL_Window* window;
@@ -119,7 +123,7 @@ bool TCSDL_Init(ScreenSurface screen, const char* title, bool fullScreen) {
 							 yy,
 							 ww,
 							 hh,
-							 (getenv("TC_FULLSCREEN") == NULL) ?  SDL_WINDOW_FULLSCREEN : SDL_WINDOW_SHOWN
+							 flags
 						 ))) {
 		std::cerr << "SDL_CreateWindow(): " << SDL_GetError() << '\n';
 		return false;
