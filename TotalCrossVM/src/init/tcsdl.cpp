@@ -56,6 +56,34 @@ bool TCSDL_Init(ScreenSurface screen, const char* title, bool fullScreen) {
 	}
 	std::cout << "SDL_VIDEODRIVER selected : " << SDL_GetCurrentVideoDriver() << '\n';
 
+	int xx = SDL_WINDOWPOS_UNDEFINED, 
+		yy = SDL_WINDOWPOS_UNDEFINED, 
+		ww, 
+		hh;
+#if __APPLE__
+  // Get the desktop area represented by a display, with the primary
+  // display located at 0,0 based on viewport allocated on initial position
+  int (*TCSDL_GetDisplayBounds)(int, SDL_Rect*) = 
+#ifdef __arm__                  
+    &SDL_GetDisplayBounds;
+#else                           
+    &SDL_GetDisplayUsableBounds;
+#endif
+
+  SDL_Rect viewport;
+  if(NOT_SUCCESS(TCSDL_GetDisplayBounds(DISPLAY_INDEX, &viewport))) {
+    printf("SDL_GetDisplayBounds failed: %s\n", SDL_GetError());
+    return false;
+  }
+
+  // Adjust height on desktop, it should not affect fullscreen (y should be 0)
+  viewport.h -= viewport.y;
+
+  xx = viewport.x;
+  yy = viewport.y;
+  ww = viewport.w;
+  hh = viewport.h;
+#else
 	SDL_DisplayMode DM;
 	// Get current display mode of all displays.
   	for(int i = 0; i < SDL_GetNumVideoDisplays(); ++i){
@@ -67,9 +95,12 @@ bool TCSDL_Init(ScreenSurface screen, const char* title, bool fullScreen) {
 			std::cout << "SDL_DisplayMode #" << i << ": current display mode is " << DM.w << "x" << DM.h << "x" << DM.refresh_rate << '\n';
 		}
 	}
+	ww = DM.w;
+	hh = DM.h;
+#endif
 
-	int width = (getenv("TC_WIDTH")  == NULL) ? DM.w : std::stoi(getenv("TC_WIDTH"));
-	int height = (getenv("TC_HEIGHT") == NULL) ? DM.h : std::stoi(getenv("TC_HEIGHT"));
+	int width = (getenv("TC_WIDTH")  == NULL) ? ww : std::stoi(getenv("TC_WIDTH"));
+	int height = (getenv("TC_HEIGHT") == NULL) ? hh : std::stoi(getenv("TC_HEIGHT"));
 
 	uint32 flags; 
 	if(getenv("TC_FULLSCREEN") == NULL) {
@@ -84,10 +115,10 @@ bool TCSDL_Init(ScreenSurface screen, const char* title, bool fullScreen) {
 	SDL_Window* window;
 	if (IS_NULL(window = SDL_CreateWindow(
 							 title,
-							 SDL_WINDOWPOS_UNDEFINED,
-							 SDL_WINDOWPOS_UNDEFINED,
-							 width,
-							 height,
+							 xx,
+							 yy,
+							 ww,
+							 hh,
 							 (getenv("TC_FULLSCREEN") == NULL) ?  SDL_WINDOW_FULLSCREEN : SDL_WINDOW_SHOWN
 						 ))) {
 		std::cerr << "SDL_CreateWindow(): " << SDL_GetError() << '\n';
