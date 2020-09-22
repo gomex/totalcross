@@ -5,11 +5,14 @@ on:
   push:
     branches: [ master ]
 
-jobs:
-  my_android_job:
-    runs-on: ubuntu-18.04 # Works also with self hosted runner supporting docker
 
-  steps:
+jobs:
+
+  build:
+    name: Build android
+    runs-on: ubuntu-20.04
+
+    steps:
     - name: Checkout
       uses: actions/checkout@v2.1.0
 
