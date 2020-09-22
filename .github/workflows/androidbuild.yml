@@ -10,16 +10,22 @@ jobs:
 
   build:
     name: Build android
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-18.04
+    container:
+      image: docker://fabernovel/android:api-29-v1.1.0
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2.1.0
 
-    - name: Exec fastlane
-      uses: fabernovel/docker-android
+    - name: Gradle cache
+      uses: actions/cache@v1.2.0
       with:
-        docker-android-tag: api-29-ndk-v1.1.0
-        exec: |
-          bundle install;
-          bundle exec fastlane my_lane
+        path: /root/.gradle
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle
+    
+    - name: Gradlew build
+      working-directory: TotalCrossVM/android
+      run: ./gradlew assembleDebug 
