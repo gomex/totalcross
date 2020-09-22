@@ -1,15 +1,15 @@
-name: android build
+name: Android build
+
 
 on:
   push:
     branches: [ master ]
 
 jobs:
-  android_job:
-    runs-on: ubuntu-20.04
+  my_android_job:
+    runs-on: ubuntu-18.04 # Works also with self hosted runner supporting docker
 
   steps:
-
     - name: Checkout
       uses: actions/checkout@v2.1.0
 
@@ -18,4 +18,5 @@ jobs:
       with:
         docker-android-tag: api-29-ndk-v1.1.0
         exec: |
-            ./gradlew assembleDebug
+          bundle install;
+          bundle exec fastlane my_lane
