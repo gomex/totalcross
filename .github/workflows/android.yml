@@ -1,9 +1,8 @@
-ame: GitHub Action sample
+name: android build
 
 on:
   push:
-    branches:
-      - master
+    branches: [ master ]
 
 jobs:
   android_job:
