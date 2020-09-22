@@ -3,7 +3,7 @@ ame: GitHub Action sample
 on:
   push:
     branches:
-      - develop
+      - master
 
 jobs:
   android_job:
