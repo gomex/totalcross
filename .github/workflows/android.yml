@@ -1,0 +1,29 @@
+ame: GitHub Action sample
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  android_job:
+    runs-on: ubuntu-20.04 # Works also with self hosted runner supporting docker
+    container:
+      image: docker://fabernovel/android:api-29-v1.1.0
+
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v2.1.0
+
+    - name: Gradle cache
+      uses: actions/cache@v1.2.0
+      with:
+        path: /root/.gradle
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle
+    
+    - name: Bundle install
+      working-directory: TotalCrossVM/android
+      run: |
+      ./gradlew assembleDebug
