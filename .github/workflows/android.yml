@@ -19,4 +19,4 @@ jobs:
       with:
         docker-android-tag: api-29-ndk-v1.1.0
         exec: |
-      ./gradlew assembleDebug
+            ./gradlew assembleDebug
