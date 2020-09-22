@@ -14,15 +14,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2.1.0
 
-    - name: Gradle cache
-      uses: actions/cache@v1.2.0
+    - name: Exec fastlane
+      uses: fabernovel/docker-android
       with:
-        path: /root/.gradle
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle
-    
-    - name: Bundle install
-      working-directory: TotalCrossVM/android
-      run: |
+        docker-android-tag: api-29-ndk-v1.1.0
+        exec: |
       ./gradlew assembleDebug
