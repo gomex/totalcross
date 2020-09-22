@@ -6,11 +6,10 @@ on:
 
 jobs:
   android_job:
-    runs-on: ubuntu-20.04 # Works also with self hosted runner supporting docker
-    container:
-      image: docker://fabernovel/android:api-29-v1.1.0
+    runs-on: ubuntu-20.04
 
   steps:
+
     - name: Checkout
       uses: actions/checkout@v2.1.0
 
